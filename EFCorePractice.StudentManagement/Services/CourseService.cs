@@ -24,7 +24,22 @@ namespace EFCorePractice.StudentManagement.Services
             {
                 responseLists.Add(new CourseResponseDTO() { Id = course.Id, Name = course.Name });
             };
-            return responseLists;   
+            return responseLists;
+        }
+
+        public IEnumerable<CourseResponseDTO> GetPaginatedCourses(int currentPage, int itemPerPage)
+        {
+            if (currentPage > _courseRepository.GetTotalPages(itemPerPage))
+            {
+                throw new ArgumentOutOfRangeException(nameof(currentPage), "Current page exceeds the total number of pages.");
+            }
+            var courses = _courseRepository.GetPaginatedCourse(currentPage, itemPerPage);
+            List<CourseResponseDTO> responseLists = new();
+            foreach (var course in courses)
+            {
+                responseLists.Add(new CourseResponseDTO() { Id = course.Id, Name = course.Name });
+            }
+            return responseLists;
         }
 
         public CourseResponseDTO GetCourseByIdResponse(int id)
@@ -120,6 +135,11 @@ namespace EFCorePractice.StudentManagement.Services
             {
                 throw new InvalidOperationException("Failed to delete the course.");
             }
+        }
+
+        public int GetTotalPage(int itemPerPage)
+        {
+            return _courseRepository.GetTotalPages(itemPerPage);
         }
     }
 }

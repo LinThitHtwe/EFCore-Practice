@@ -18,7 +18,15 @@ namespace EFCorePractice.StudentManagement.Repository
             return _context.Courses.AsNoTracking().ToList();
         }
 
-        public Course? GetCourseById(int id)
+        public IEnumerable<Course> GetPaginatedCourse(int currentPage, int itemPerPage)
+        {
+            return _context.Courses.AsNoTracking()
+                                   .Skip((currentPage - 1) * itemPerPage)
+                                   .Take(itemPerPage)
+                                   .ToList();
+        }
+
+        public Course GetCourseById(int id)
         {
             return _context.Courses.FirstOrDefault(course => course.Id == id);
         }
@@ -42,6 +50,12 @@ namespace EFCorePractice.StudentManagement.Repository
             _context.Courses.Remove(course);
             var result = _context.SaveChanges();
             return result > 0;
+        }
+
+        public int GetTotalPages(int itemPerPage)
+        {
+            var rowCount = _context.Courses.AsNoTracking().Count();
+            return (int)Math.Ceiling((double)rowCount / itemPerPage);
         }
     }
 }
