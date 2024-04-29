@@ -1,7 +1,9 @@
 ﻿using EFCorePractice.StudentManagement.DTOs;
+using EFCorePractice.StudentManagement.Exceptions;
 using EFCorePractice.StudentManagement.IRepository;
 using EFCorePractice.StudentManagement.IServices;
 using EFCorePractice.StudentManagement.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace EFCorePractice.StudentManagement.Services
 {
@@ -14,18 +16,24 @@ namespace EFCorePractice.StudentManagement.Services
             _courseRepository = courseRepository;
         }
 
-        public IEnumerable<Course> GetAllCourses()
+        public IEnumerable<CourseResponseDTO> GetAllCourses()
         {
-            return _courseRepository.GetAll();
+            var courses = _courseRepository.GetAll();
+            List<CourseResponseDTO> responseLists = new();
+            foreach (var course in courses)
+            {
+                responseLists.Add(new CourseResponseDTO() { Id = course.Id, Name = course.Name });
+            };
+            return responseLists;   
         }
 
-        public CourseResponseDTO GetCourseById(int id)
+        public CourseResponseDTO GetCourseByIdResponse(int id)
         {
             if (!IsCourseExist(id))
             {
-                throw new InvalidOperationException($"Course with {id} not found");
+                throw new NotFoundException($"Course with {id} not found");
             }
-            var course =  _courseRepository.GetCourseById(id);
+            var course = _courseRepository.GetCourseById(id);
             CourseResponseDTO responseCourse = new()
             {
                 Id = course.Id,
@@ -34,13 +42,22 @@ namespace EFCorePractice.StudentManagement.Services
             return responseCourse;
         }
 
+        public Course GetCourseModelById(int id)
+        {
+            if (!IsCourseExist(id))
+            {
+                throw new NotFoundException($"Course with {id} not found");
+            }
+            return _courseRepository.GetCourseById(id);
+        }
+
         public bool IsCourseExist(int id)
         {
             var course = _courseRepository.GetCourseById(id);
             return course is not null;
         }
 
-        public void CreateBlog(CourseRequestDTO courseRequest)
+        public void CreateCourse(CourseRequestDTO courseRequest)
         {
             if (courseRequest is null)
             {
@@ -64,7 +81,7 @@ namespace EFCorePractice.StudentManagement.Services
             }
         }
 
-        public void UpdateBlog(int id, CourseRequestDTO courseRequest)
+        public void UpdateCourse(int id, CourseRequestDTO courseRequest)
         {
             if (courseRequest is null)
             {
@@ -78,16 +95,13 @@ namespace EFCorePractice.StudentManagement.Services
 
             if (!IsCourseExist(id))
             {
-                throw new InvalidOperationException($"Course with {id} not found");
+                throw new NotFoundException($"Course with {id} not found");
             }
 
-            Course updateCourse = new()
-            {
-                Id = id,
-                Name = courseRequest.Name,
-            };
+            var course = GetCourseModelById(id);
+            course.Name = courseRequest.Name;
 
-            var result = _courseRepository.UpdateCourse(updateCourse);
+            var result = _courseRepository.UpdateCourse(course);
             if (!result)
             {
                 throw new InvalidOperationException("Failed to update the course.");
@@ -95,14 +109,13 @@ namespace EFCorePractice.StudentManagement.Services
 
         }
 
-        public void DeleteBlog(int id)
+        public void DeleteCourse(int id)
         {
             if (!IsCourseExist(id))
             {
-                throw new InvalidOperationException($"Course with {id} not found");
+                throw new NotFoundException($"Course with {id} not found");
             }
-            Course deleteCourse = new() { Id = id };
-            var result = _courseRepository.DeleteCourse(deleteCourse);
+            var result = _courseRepository.DeleteCourse(GetCourseModelById(id));
             if (!result)
             {
                 throw new InvalidOperationException("Failed to delete the course.");

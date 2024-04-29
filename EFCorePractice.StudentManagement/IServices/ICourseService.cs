@@ -5,11 +5,12 @@ namespace EFCorePractice.StudentManagement.IServices
 {
     public interface ICourseService
     {
-        public IEnumerable<Course> GetAllCourses();
-        public CourseResponseDTO GetCourseById(int id);
+        public IEnumerable<CourseResponseDTO> GetAllCourses();
+        public CourseResponseDTO GetCourseByIdResponse(int id);
+        public Course GetCourseModelById(int id);
         public bool IsCourseExist(int id);
-        public void CreateBlog(CourseRequestDTO course);
-        public void UpdateBlog(int  id, CourseRequestDTO course);
-        public void DeleteBlog(int id);
+        public void CreateCourse(CourseRequestDTO course);
+        public void UpdateCourse(int  id, CourseRequestDTO course);
+        public void DeleteCourse(int id);
     }
 }

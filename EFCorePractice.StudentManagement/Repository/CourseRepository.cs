@@ -18,7 +18,7 @@ namespace EFCorePractice.StudentManagement.Repository
             return _context.Courses.AsNoTracking().ToList();
         }
 
-        public Course GetCourseById(int id)
+        public Course? GetCourseById(int id)
         {
             return _context.Courses.FirstOrDefault(course => course.Id == id);
         }
