@@ -20,8 +20,6 @@ namespace EFCorePractice.StudentManagement.Controllers
             _courseService = courseService;
         }
 
-        
-
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(ApiResponseSuccess<List<CourseResponseDTO>>))]
         public IActionResult GetAllCourses()
@@ -91,6 +89,10 @@ namespace EFCorePractice.StudentManagement.Controllers
             {
                 return BadRequest(new ApiResponse() { Data = ae.Message, IsSuccess = false });
             }
+            catch(DataAlreadyExistsException alreadyExist)
+            {
+                return StatusCode(409, new ApiResponse() { Data = alreadyExist.Message ,IsSuccess = false});
+            }
             catch (InvalidOperationException ioe)
             {
                 return StatusCode(424, new ApiResponse() { Data = ioe.Message, IsSuccess = false });
@@ -125,6 +127,10 @@ namespace EFCorePractice.StudentManagement.Controllers
             catch (NotFoundException notFound)
             {
                 return NotFound((new ApiResponse() { Data = notFound.Message, IsSuccess = false }));
+            }
+            catch (DataAlreadyExistsException alreadyExist)
+            {
+                return StatusCode(409, new ApiResponse() { Data = alreadyExist.Message, IsSuccess = false });
             }
             catch (InvalidOperationException ioe)
             {

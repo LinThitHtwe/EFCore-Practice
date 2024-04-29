@@ -6,6 +6,7 @@ namespace EFCorePractice.StudentManagement.IRepository
     {
         public IEnumerable<Course> GetAll();
         public IEnumerable<Course> GetPaginatedCourse(int currentPage,int itemPerPage);
+        public Course GetCourseByName(string name);
         public int GetTotalPages(int itemPerPage);
         public Course GetCourseById(int id);
         public bool CreateCourse(Course course);

@@ -57,5 +57,10 @@ namespace EFCorePractice.StudentManagement.Repository
             var rowCount = _context.Courses.AsNoTracking().Count();
             return (int)Math.Ceiling((double)rowCount / itemPerPage);
         }
+
+        public Course GetCourseByName(string name)
+        {
+            return _context.Courses.FirstOrDefault(course => course.Name.ToLower() == name.Trim().ToLower());
+        }
     }
 }

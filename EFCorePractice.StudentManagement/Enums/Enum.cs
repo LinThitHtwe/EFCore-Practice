@@ -9,7 +9,7 @@
             student
         }
 
-        public enum  Gender
+        public enum Gender
         {
             male,
             female,

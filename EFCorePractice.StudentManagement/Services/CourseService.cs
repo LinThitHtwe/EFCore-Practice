@@ -83,6 +83,10 @@ namespace EFCorePractice.StudentManagement.Services
             {
                 throw new ArgumentException("Course name must be at least 2 characters long.", nameof(courseRequest));
             }
+            if(_courseRepository.GetCourseByName(courseRequest.Name) is not null)
+            {
+                throw new DataAlreadyExistsException($"Course name `${courseRequest.Name}` already exists");
+            }
 
             Course newCourse = new()
             {
@@ -113,6 +117,13 @@ namespace EFCorePractice.StudentManagement.Services
                 throw new NotFoundException($"Course with {id} not found");
             }
 
+            var isCourseWithSameName = _courseRepository.GetCourseByName(courseRequest.Name);
+
+            if (isCourseWithSameName is not null && isCourseWithSameName.Id != id)
+            {
+                throw new DataAlreadyExistsException($"Course name `${courseRequest.Name}` already exists");
+            }
+
             var course = GetCourseModelById(id);
             course.Name = courseRequest.Name;
 
@@ -141,5 +152,6 @@ namespace EFCorePractice.StudentManagement.Services
         {
             return _courseRepository.GetTotalPages(itemPerPage);
         }
+        
     }
 }
