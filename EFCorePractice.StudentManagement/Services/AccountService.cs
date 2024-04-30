@@ -5,6 +5,7 @@ using EFCorePractice.StudentManagement.IServices;
 using EFCorePractice.StudentManagement.Models;
 using EFCorePractice.StudentManagement.Repository;
 using EFCorePractice.StudentManagement.Utils;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using static EFCorePractice.StudentManagement.Enums.Enum;
 
@@ -35,15 +36,19 @@ namespace EFCorePractice.StudentManagement.Services
             }
             if (!Enum.IsDefined(typeof(AccountType), accountRequest.AccountType))
             {
-                throw new ArgumentException(nameof(accountRequest.AccountType),"Invalid account type. Please provide a valid account type.");
+                throw new ArgumentException(nameof(accountRequest.AccountType), "Invalid account type. Please provide a valid account type.");
             }
 
             Account newAccount = new()
             {
                 Email = accountRequest.Email,
                 Password = accountRequest.Password,
-                AccountType = accountRequest.AccountType,
+
             };
+            if (Enum.TryParse<AccountType>(accountRequest.AccountType, out AccountType parsedAccountType))
+            {
+                newAccount.AccountType = parsedAccountType;
+            }
             var result = _accountRepository.Create(newAccount);
             if (!result)
             {
@@ -79,7 +84,8 @@ namespace EFCorePractice.StudentManagement.Services
             List<AccountResponseDTO> responseLists = new();
             foreach (var account in accounts)
             {
-                responseLists.Add(new AccountResponseDTO() { Email = account.Email, AccountType = account.AccountType });
+
+                responseLists.Add(new AccountResponseDTO() { Id = account.Id, Email = account.Email, AccountType = GetAccountType(account.AccountType) });
             };
             return responseLists;
         }
@@ -93,7 +99,8 @@ namespace EFCorePractice.StudentManagement.Services
             var account = _accountRepository.GetById(id);
             AccountResponseDTO accountResponse = new()
             {
-                AccountType = account.AccountType,
+                Id = account.Id,
+                AccountType = GetAccountType(account.AccountType),
                 Email = account.Email,
             };
             return accountResponse;
@@ -109,9 +116,14 @@ namespace EFCorePractice.StudentManagement.Services
             List<AccountResponseDTO> responseLists = new();
             foreach (var account in accounts)
             {
-                responseLists.Add(new AccountResponseDTO() { Email = account.Email , AccountType = account.AccountType});
+                responseLists.Add(new AccountResponseDTO() { Id = account.Id, Email = account.Email, AccountType = GetAccountType(account.AccountType) });
             }
             return responseLists;
+        }
+
+        public int GetTotalPages(int itemPerPage)
+        {
+            return _accountRepository.GetTotalPages(itemPerPage);
         }
 
         public bool IsAccountExist(int id)
@@ -120,7 +132,7 @@ namespace EFCorePractice.StudentManagement.Services
             return account is not null;
         }
 
-        public void Update(int id ,AccountRequestDTO accountRequest)
+        public void Update(int id, AccountRequestDTO accountRequest)
         {
             if (accountRequest is null)
             {
@@ -130,6 +142,11 @@ namespace EFCorePractice.StudentManagement.Services
             if (!IsValidEmail(accountRequest.Email))
             {
                 throw new ArgumentException("Invalid email address", nameof(accountRequest));
+            }
+
+            if (!Enum.IsDefined(typeof(AccountType), accountRequest.AccountType))
+            {
+                throw new ArgumentException(nameof(accountRequest.AccountType), "Invalid account type. Please provide a valid account type.");
             }
 
             if (!IsAccountExist(id))
@@ -146,7 +163,11 @@ namespace EFCorePractice.StudentManagement.Services
 
             var account = GetAccountModelById(id);
             account.Email = accountRequest.Email;
-            account.AccountType = accountRequest.AccountType;
+            if (Enum.TryParse<AccountType>(accountRequest.AccountType, out AccountType parsedAccountType))
+            {
+                account.AccountType = parsedAccountType;
+            }
+
 
             var result = _accountRepository.Update(account);
             if (!result)
@@ -155,16 +176,22 @@ namespace EFCorePractice.StudentManagement.Services
             }
         }
 
-        public void Update(AccountRequestDTO accountRequest)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool IsValidEmail(string email)
+        private static bool IsValidEmail(string email)
         {
             string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
             Regex regex = new(pattern);
             return regex.IsMatch(email);
+        }
+
+        private static string GetAccountType(AccountType accountType)
+        {
+            return accountType switch
+            {
+                (AccountType.admin) => "admin",
+                (AccountType.parent) => "parent",
+                (AccountType.student) => "student",
+                _ => "null",
+            };
         }
     }
 }

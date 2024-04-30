@@ -9,10 +9,11 @@ namespace EFCorePractice.StudentManagement.IServices
         public AccountResponseDTO GetById(int id);
         public IEnumerable<AccountResponseDTO> GetPaginatedAccounts(int currentPage,int itemPerPage);
         public void Create(AccountRequestDTO accountRequest);
-        public void Update(AccountRequestDTO accountRequest);
+        public void Update(int id ,AccountRequestDTO accountRequest);
         public void Delete(int id);
         public bool IsAccountExist(int id);
         public Account GetAccountModelById(int id);
+        public int GetTotalPages(int itemPerPage);
 
     }
 }
