@@ -8,7 +8,7 @@ namespace EFCorePractice.StudentManagement.IRepository
         public IEnumerable<Account> GetAll();
         public IEnumerable<Account> GetPaginatedAccount(int currentPage,int itemPerPage);
         public Account GetByEmail(string email);
-        public Account GetById(int id);
+        public Account? GetById(int id);
         public bool Create(Account account);
         public bool Update(Account account);
         public bool Delete(Account account);

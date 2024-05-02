@@ -3,9 +3,6 @@ using EFCorePractice.StudentManagement.Exceptions;
 using EFCorePractice.StudentManagement.IRepository;
 using EFCorePractice.StudentManagement.IServices;
 using EFCorePractice.StudentManagement.Models;
-using EFCorePractice.StudentManagement.Repository;
-using EFCorePractice.StudentManagement.Utils;
-using System.Security.Principal;
 using System.Text.RegularExpressions;
 using static EFCorePractice.StudentManagement.Enums.Enum;
 
@@ -185,13 +182,7 @@ namespace EFCorePractice.StudentManagement.Services
 
         private static string GetAccountType(AccountType accountType)
         {
-            return accountType switch
-            {
-                (AccountType.admin) => "admin",
-                (AccountType.parent) => "parent",
-                (AccountType.student) => "student",
-                _ => "null",
-            };
+            return accountType.ToString().ToLower();
         }
     }
 }

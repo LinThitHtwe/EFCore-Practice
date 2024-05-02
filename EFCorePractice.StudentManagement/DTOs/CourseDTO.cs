@@ -1,8 +1,8 @@
 ﻿namespace EFCorePractice.StudentManagement.DTOs
 {
-    public class CourseRequestDTO
+    public record CourseRequestDTO
     {
-        public string Name { get; set; }
+        public string Name { get; init; }
     }
 
     public class CourseResponseDTO

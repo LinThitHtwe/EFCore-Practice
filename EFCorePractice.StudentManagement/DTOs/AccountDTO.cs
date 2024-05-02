@@ -4,15 +4,11 @@ using static EFCorePractice.StudentManagement.Enums.Enum;
 namespace EFCorePractice.StudentManagement.DTOs
 {
 
-    [DataContract]
-    public class AccountRequestDTO
+    public record AccountRequestDTO
     {
-        [DataMember(Name = "email")]
-        public string Email { get; set; }
-        [DataMember(Name = "password")]
-        public string Password { get; set; }
-        [DataMember(Name = "accountType")]
-        public string AccountType { get; set; }
+        public string Email { get; init; }
+        public string Password { get; init; }
+        public string AccountType { get; init; }
     }
 
     public class AccountResponseDTO

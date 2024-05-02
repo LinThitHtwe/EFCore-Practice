@@ -34,11 +34,7 @@ namespace EFCorePractice.StudentManagement.Services
                 throw new ArgumentOutOfRangeException(nameof(currentPage), "Current page exceeds the total number of pages.");
             }
             var courses = _courseRepository.GetPaginatedCourse(currentPage, itemPerPage);
-            List<CourseResponseDTO> responseLists = new();
-            foreach (var course in courses)
-            {
-                responseLists.Add(new CourseResponseDTO() { Id = course.Id, Name = course.Name });
-            }
+            List<CourseResponseDTO> responseLists = courses.Select(course => new CourseResponseDTO() { Id = course.Id, Name = course.Name }).ToList();
             return responseLists;
         }
 
@@ -83,7 +79,7 @@ namespace EFCorePractice.StudentManagement.Services
             {
                 throw new ArgumentException("Course name must be at least 2 characters long.", nameof(courseRequest));
             }
-            if(_courseRepository.GetCourseByName(courseRequest.Name) is not null)
+            if (_courseRepository.GetCourseByName(courseRequest.Name) is not null)
             {
                 throw new DataAlreadyExistsException($"Course name `${courseRequest.Name}` already exists");
             }
@@ -152,6 +148,6 @@ namespace EFCorePractice.StudentManagement.Services
         {
             return _courseRepository.GetTotalPages(itemPerPage);
         }
-        
+
     }
 }
